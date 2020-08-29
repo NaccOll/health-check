@@ -1,0 +1,15 @@
+health:
+  configs:
+    - name: 百度测试
+      exec: app.health.common
+      exec-class: CommonHttpHealth
+      frequency: 300
+      fail-notify-count: 3
+      timeout-rel: ">="
+      timeout: 10
+      type: http
+      http-param:
+        http-url: https://www.baidu.com
+        http-method: GET
+        match-type: true
+        match-content: "baidu"

@@ -1,0 +1,1 @@
+from .health_properties import HealthProperties

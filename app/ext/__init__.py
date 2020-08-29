@@ -1,0 +1,1 @@
+from .dingding import send_msg_text
