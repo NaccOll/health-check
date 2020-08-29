@@ -35,7 +35,16 @@ class Dict(dict):
 
     def update(self, d):
         for key in d.keys():
-            self[key] = _create(d[key])
+            origin_value = None
+            if key in self:
+                origin_value = self[key]
+            new_value = _create(d[key])
+            if origin_value is not None \
+                    and isinstance(origin_value, Dict) \
+                    and isinstance(new_value, Dict):
+                self[key].update(new_value)
+            else:
+                self[key] = new_value
 
     def is_useless(self):
         return self.keys() == 0
