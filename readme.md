@@ -38,9 +38,3 @@ pip install -r requirements/develop.txt
 ```bash
 python run.py start-server
 ```
-
-#### 配置再加载
-
-```bash
-python run.py reload-server
-```
