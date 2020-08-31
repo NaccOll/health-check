@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
-import time
 import click
 from framework import Config
 
@@ -17,10 +15,6 @@ def start_server(env, extra_config_path):
     Config.load_config(env, extra_config_path)
     from app import run
     run()
-
-
-
-
 
 cli = click.CommandCollection(sources=[common])
 
