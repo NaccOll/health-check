@@ -33,7 +33,7 @@ class Config(metaclass=NoInstancesMeta):
         fixed_config_dir = 'config'
         profiles = list(map(lambda x: x.strip(), profiles.split(',')))
         Config.__load_config_by_file(fixed_config_dir, profiles)
-        if fixed_config_dir != extra_config_path:
+        if fixed_config_dir != extra_config_path and os.path.exists(extra_config_path):
             Config.__load_config_by_file(extra_config_path, profiles)
 
         for key in os.environ:
@@ -96,5 +96,7 @@ class Config(metaclass=NoInstancesMeta):
         sub_config_class = sub_config.config
         sub_config_prefix = sub_config.prefix
         sub_properties = Config.properties().get_prefix(sub_config_prefix)
+        if sub_properties is None:
+            return
         sub_config_instance: ConfigProperties = sub_config_class()
         sub_config_instance.load_config(sub_properties)
