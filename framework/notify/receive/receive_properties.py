@@ -44,7 +44,7 @@ class ReceiveProperties(ConfigProperties):
         return user_sets
 
     def get_usernames_by_groupname(self, group_name: str):
-        return self.get_users_by_groupnames([group_name])
+        return self.get_usernames_by_groupnames([group_name])
 
     def get_user_configs_by_usernames(self, usernames):
         result: List[ReceiverItem] = []
