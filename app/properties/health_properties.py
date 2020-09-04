@@ -28,6 +28,7 @@ class HealthItem:
         self.fail_silent_period: int = config['fail-silent-period'] if "fail-silent-period" in config else 300
         self.start_time = config['start_time'] if "start_time" in config else '00:00:00'
         self.end_time = config['end_time'] if "end_time" in config else '23:59:59'
+        self.receivers = config.get('receivers', [])
         self.type: str = config['type']
         self.http_param: HttpParam = HttpParam(config['http-param'])
 

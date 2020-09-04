@@ -1,8 +1,8 @@
 import time
 from abc import abstractmethod
 from app.properties.health_properties import HealthItem
-from app.ext.dingding import send_msg_text
 from framework import Logger
+from framework.notify import NotifyManager
 import datetime
 
 
@@ -76,7 +76,8 @@ class AbstractHealth:
         content = "站点监控: {name}发生异常, 连续{fail_count}次未通过健康检查,原因: {reason} 请立即排查".format(
             name=self.config.name, fail_count=self.fail_count, reason=reason)
         self.logger.error(content)
-        # send_msg_text(content)
+        if self.config.receivers is not None and len(self.config.receivers) > 0:
+            NotifyManager().send_groups_text(self.config.receivers)
 
     def load_import(self):
         config = self.config

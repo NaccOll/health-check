@@ -13,9 +13,7 @@ class Dict(dict):
         try:
             return self[key]
         except KeyError:
-            tmp = Dict()
-            self[key] = tmp
-            return tmp
+            return None
 
     def __setattr__(self, key, value):
         self[key] = _create(value)
