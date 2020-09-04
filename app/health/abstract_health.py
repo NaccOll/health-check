@@ -77,7 +77,7 @@ class AbstractHealth:
             name=self.config.name, fail_count=self.fail_count, reason=reason)
         self.logger.error(content)
         if self.config.receivers is not None and len(self.config.receivers) > 0:
-            NotifyManager().send_groups_text(self.config.receivers)
+            NotifyManager().send_groups_text(self.config.receivers, content)
 
     def load_import(self):
         config = self.config
