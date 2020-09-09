@@ -25,7 +25,7 @@ class HealthItem:
         self.timeout_rel: str = config['timeout-rel']
         self.timeout: str = config['timeout']
         self.imports: List[str] = config['imports'] if "imports" in config else []
-        self.fail_silent_period: int = config['fail-silent-period'] if "fail-silent-period" in config else 300
+        self.fail_silent_period: int = config['fail-silent-period'] if "fail-silent-period" in config else 1800
         self.start_time = config['start_time'] if "start_time" in config else '00:00:00'
         self.end_time = config['end_time'] if "end_time" in config else '23:59:59'
         self.receivers = config.get('receivers', [])
