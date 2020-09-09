@@ -21,6 +21,7 @@ class AbstractHealth:
         self.last_check_date = None
         self.last_fail_notify_date = None
         self.fail_count = 0
+        self.fail_notify_count = 0
         self.pending = False
 
         self.logger = Logger(self.config.name, __file__)
@@ -67,11 +68,12 @@ class AbstractHealth:
         return True
 
     def _reset_fail_count(self):
-        if self.fail_count > 0:
-            content = "站点监控: {name}发生恢复正常".format(name=self.config.name)
+        if self.fail_notify_count > 0:
+            content = "站点监控: {name}恢复正常".format(name=self.config.name)
             if self.config.receivers is not None and len(self.config.receivers) > 0:
                 NotifyManager().send_groups_text(self.config.receivers, content)
         self.fail_count = 0
+        self.fail_notify_count = 0
 
     def notify(self, reason):
         if not self.last_fail_notify_date is None and \
@@ -81,6 +83,7 @@ class AbstractHealth:
         content = "站点监控: {name}发生异常, 连续{fail_count}次未通过健康检查,原因: {reason} 请立即排查".format(
             name=self.config.name, fail_count=self.fail_count, reason=reason)
         self.logger.error(content)
+        self.fail_notify_count = self.fail_notify_count + 1
         if self.config.receivers is not None and len(self.config.receivers) > 0:
             NotifyManager().send_groups_text(self.config.receivers, content)
 
