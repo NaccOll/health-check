@@ -1,9 +1,10 @@
+import datetime
 import time
 from abc import abstractmethod
+
 from app.properties.health_properties import HealthItem
 from framework import Logger
 from framework.notify import NotifyManager
-import datetime
 
 
 def getTime():
@@ -66,6 +67,10 @@ class AbstractHealth:
         return True
 
     def _reset_fail_count(self):
+        if self.fail_count > 0:
+            content = "站点监控: {name}发生恢复正常".format(name=self.config.name)
+            if self.config.receivers is not None and len(self.config.receivers) > 0:
+                NotifyManager().send_groups_text(self.config.receivers, content)
         self.fail_count = 0
 
     def notify(self, reason):
