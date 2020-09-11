@@ -42,6 +42,7 @@ class AbstractHealth:
         if self.pending:
             return True
         self.pending = True
+        self.last_check_date = getTime()
         self.logger.info("{name}检查开始".format(name=config.name))
         check_time = None
         try:
@@ -63,7 +64,6 @@ class AbstractHealth:
                 self.notify(reason)
             return False
         finally:
-            self.last_check_date = getTime()
             self.pending = False
         return True
 
