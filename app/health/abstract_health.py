@@ -74,6 +74,7 @@ class AbstractHealth:
                 NotifyManager().send_groups_text(self.config.receivers, content)
         self.fail_count = 0
         self.fail_notify_count = 0
+        self.last_fail_notify_date = None
 
     def notify(self, reason):
         if not self.last_fail_notify_date is None and \
