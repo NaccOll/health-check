@@ -1,5 +1,6 @@
 import requests
 from .abstract_health import AbstractHealth, HealthError
+from requests.packages.urllib3.exceptions import ReadTimeoutError
 from ..properties.health_properties import HealthItem, HttpParam
 
 
@@ -22,12 +23,15 @@ class CommonHttpHealth(AbstractHealth):
             url_param = {key: eval(value)
                          for key, value in param.url_param.items()}
             param.http_url = param.http_url.format(**url_param)
-        if param.http_method.upper() == "GET":
-            res = requests.get(param.http_url, timeout=config.timeout+1)
-        if param.http_method.upper() == "POST":
-            pass
-        if param.http_method.upper() == "PUT":
-            pass
+        try:
+            if param.http_method.upper() == "GET":
+                res = requests.get(param.http_url, timeout=config.timeout+1)
+            if param.http_method.upper() == "POST":
+                pass
+            if param.http_method.upper() == "PUT":
+                pass
+        except ReadTimeoutError as e:
+            raise HealthError("请求超时")
         if res is None:
             raise HealthError("响应结果为空")
         if res.status_code >= 400:
