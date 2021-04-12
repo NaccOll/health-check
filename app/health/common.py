@@ -20,10 +20,10 @@ class CommonHttpHealth(AbstractHealth):
         param: HttpParam = self.http_param
         if not param.url_param is None:
             url_param = {key: eval(value)
-                     for key, value in param.url_param.items()}
+                         for key, value in param.url_param.items()}
             param.http_url = param.http_url.format(**url_param)
         if param.http_method.upper() == "GET":
-            res = requests.get(param.http_url)
+            res = requests.get(param.http_url, timeout=config.timeout+1)
         if param.http_method.upper() == "POST":
             pass
         if param.http_method.upper() == "PUT":
