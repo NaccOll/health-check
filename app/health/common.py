@@ -19,13 +19,19 @@ class CommonHttpHealth(AbstractHealth):
                     import_cls=import_cls))
         res = None
         param: HttpParam = self.http_param
+        url = ''
+        headers = {}
         if not param.url_param is None:
             url_param = {key: eval(value)
                          for key, value in param.url_param.items()}
-            param.http_url = param.http_url.format(**url_param)
+            url = param.http_url.format(**url_param)
+        if not param.headers is None:
+            headers = {key: value
+                       for key, value in param.headers.items()}
         try:
             if param.http_method.upper() == "GET":
-                res = requests.get(param.http_url, timeout=config.timeout+1)
+                res = requests.get(
+                    url, headers=headers, timeout=config.timeout+1)
             if param.http_method.upper() == "POST":
                 pass
             if param.http_method.upper() == "PUT":
@@ -37,7 +43,9 @@ class CommonHttpHealth(AbstractHealth):
         if res.status_code >= 400:
             raise HealthError("请求有误,响应状态码: {status} 原因: {reason}".format(
                 status=res.status_code, reason=res.reason))
-        if param.match_type and param.match_content not in res.text:
-            raise HealthError("响应结果匹配错误, 响应结果文本: "+res.text)
-        if not param.match_type and param.match_content in res.text:
+        
+        text = res.text if res.encoding == 'utf-8' else res.text.encode(res.encoding).decode('utf-8')
+        if param.match_type and param.match_content not in text:
+            raise HealthError("响应结果匹配错误, 响应结果文本: "+text)
+        if not param.match_type and param.match_content in text:
             raise HealthError("响应结果不应匹配")
