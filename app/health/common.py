@@ -1,6 +1,7 @@
 import requests
-from .abstract_health import AbstractHealth, HealthError
+import importlib
 from requests.packages.urllib3.exceptions import ReadTimeoutError
+from .abstract_health import AbstractHealth, HealthError
 from ..properties.health_properties import HealthItem, HttpParam
 
 
@@ -19,7 +20,7 @@ class CommonHttpHealth(AbstractHealth):
                     import_cls=import_cls))
         res = None
         param: HttpParam = self.http_param
-        url = ''
+        url = param.http_url
         headers = {}
         if not param.url_param is None:
             url_param = {key: eval(value)
@@ -43,9 +44,14 @@ class CommonHttpHealth(AbstractHealth):
         if res.status_code >= 400:
             raise HealthError("请求有误,响应状态码: {status} 原因: {reason}".format(
                 status=res.status_code, reason=res.reason))
-        
-        text = res.text if res.encoding == 'utf-8' else res.text.encode(res.encoding).decode('utf-8')
+
+        text = res.text if res.encoding is None or res.encoding == 'utf-8' else res.text.encode(
+            res.encoding).decode('utf-8')
         if param.match_type and param.match_content not in text:
             raise HealthError("响应结果匹配错误, 响应结果文本: "+text)
         if not param.match_type and param.match_content in text:
             raise HealthError("响应结果不应匹配")
+        if param.extra_check:
+            extra_module = importlib.import_module(param.extra_check)
+            extra_check = getattr(extra_module, 'extra_check')
+            extra_check(param, text)

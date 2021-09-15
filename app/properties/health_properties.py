@@ -13,6 +13,7 @@ class HttpParam:
         self.http_method: str = config['http-method']
         self.match_type: bool = config['match-type']
         self.match_content: str = config['match-content']
+        self.extra_check: str = config['extra-check'] if 'extra-check' in config else None
 
 
 class HealthItem:
