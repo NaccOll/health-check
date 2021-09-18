@@ -14,6 +14,7 @@ class HttpParam:
         self.match_type: bool = config['match-type']
         self.match_content: str = config['match-content']
         self.extra_check: str = config['extra-check'] if 'extra-check' in config else None
+        self.ignore_status_error: str = config['ignore-status-error'] if 'ignore-status-error' in config else False
 
 
 class HealthItem:

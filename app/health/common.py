@@ -42,6 +42,8 @@ class CommonHttpHealth(AbstractHealth):
         if res is None:
             raise HealthError("响应结果为空")
         if res.status_code >= 400:
+            if param.ignore_status_error:
+                return
             raise HealthError("请求有误,响应状态码: {status} 原因: {reason}".format(
                 status=res.status_code, reason=res.reason))
 
