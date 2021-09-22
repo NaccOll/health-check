@@ -26,6 +26,7 @@ class HealthItem:
         self.fail_notify_count: int = config['fail-notify-count']
         self.timeout_rel: str = config['timeout-rel']
         self.timeout: str = config['timeout']
+        self.ignore_timeout_error: bool = config['ignore-timeout-error'] if 'ignore-timeout-error' in config else False 
         self.imports: List[str] = config['imports'] if "imports" in config else []
         self.fail_silent_period: int = config['fail-silent-period'] if "fail-silent-period" in config else 1800
         self.start_time = config['start_time'] if "start_time" in config else '00:00:00'

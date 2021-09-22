@@ -50,7 +50,7 @@ class AbstractHealth:
             self._do_health()
             end = getTime()
             check_time = end-start
-            if eval(str(check_time)+config.timeout_rel + str(config.timeout*1000)):
+            if eval(str(check_time)+config.timeout_rel + str(config.timeout*1000)) and not config.ignore_timeout_error:
                 raise HealthError("响应结果超时")
             self._reset_fail_count()
             self.logger.info("{name}检查通过, 响应时间: {check_time}".format(

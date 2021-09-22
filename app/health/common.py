@@ -38,6 +38,8 @@ class CommonHttpHealth(AbstractHealth):
             if param.http_method.upper() == "PUT":
                 pass
         except ReadTimeoutError as e:
+            if config.ignore_timeout_error:
+                return
             raise HealthError("请求超时")
         if res is None:
             raise HealthError("响应结果为空")
