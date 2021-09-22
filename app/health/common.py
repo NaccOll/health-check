@@ -1,6 +1,7 @@
 import requests
 import importlib
 from requests.packages.urllib3.exceptions import ReadTimeoutError
+from requests.exceptions import ReadTimeout, ConnectTimeout,Timeout
 from .abstract_health import AbstractHealth, HealthError
 from ..properties.health_properties import HealthItem, HttpParam
 
@@ -37,7 +38,7 @@ class CommonHttpHealth(AbstractHealth):
                 pass
             if param.http_method.upper() == "PUT":
                 pass
-        except ReadTimeoutError as e:
+        except (ReadTimeoutError, Timeout) as e:
             if config.ignore_timeout_error:
                 return
             raise HealthError("请求超时")
