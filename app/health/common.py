@@ -1,7 +1,7 @@
 import requests
 import importlib
 from requests.packages.urllib3.exceptions import ReadTimeoutError
-from requests.exceptions import ReadTimeout, ConnectTimeout,Timeout
+from requests.exceptions import ReadTimeout, ConnectTimeout, Timeout
 from .abstract_health import AbstractHealth, HealthError
 from ..properties.health_properties import HealthItem, HttpParam
 
@@ -44,7 +44,7 @@ class CommonHttpHealth(AbstractHealth):
             raise HealthError("请求超时")
         if res is None:
             raise HealthError("响应结果为空")
-        if res.status_code >= 400:
+        if not (300 > res.status_code >= 200):
             if param.ignore_status_error:
                 return
             raise HealthError("请求有误,响应状态码: {status} 原因: {reason}".format(
