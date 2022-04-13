@@ -30,14 +30,20 @@ class CommonHttpHealth(AbstractHealth):
         if not param.headers is None:
             headers = {key: value
                        for key, value in param.headers.items()}
+        if not param.body is None:
+            body_param = {key: eval(value)
+                          for key, value in param.body_param.items()}
+            body = param.body.format(**body_param)
         try:
             if param.http_method.upper() == "GET":
                 res = requests.get(
                     url, headers=headers, timeout=config.timeout+1)
             if param.http_method.upper() == "POST":
-                pass
+                res = requests.post(
+                    url, data=body, headers=headers, timeout=config.timeout+1)
             if param.http_method.upper() == "PUT":
-                pass
+                res = requests.post(
+                    url, data=body, headers=headers, timeout=config.timeout+1)
         except (ReadTimeoutError, Timeout) as e:
             if config.ignore_timeout_error:
                 return
