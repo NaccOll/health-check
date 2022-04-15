@@ -34,6 +34,8 @@ class AbstractHealth:
             "%Y-%m-%d")+" "+config.start_time, "%Y-%m-%d %H:%M:%S")
         end_time = datetime.datetime.strptime(datetime.datetime.now().strftime(
             "%Y-%m-%d")+" "+config.end_time, "%Y-%m-%d %H:%M:%S")
+        if start_time > end_time:
+            end_time = end_time + datetime.timedelta(days=1)
         if not (start_time < datetime.datetime.now() < end_time):
             return True
 
