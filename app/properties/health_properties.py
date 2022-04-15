@@ -6,7 +6,7 @@ from framework.struct.config_properties import ConfigProperties
 class HttpParam:
     def __init__(self, config):
         self.http_url: str = config['http-url']
-        self.body: str = config['body']
+        self.body: str = config['body'] if 'body' in config else None
         self.body_param: Dict[str, str] = {name: value for (name, value) in config['body-param'].items()} \
             if 'body-param' in config else None
         self.url_param: Dict[str, str] = {name: value for (name, value) in config['url-param'].items()} \
