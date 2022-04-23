@@ -23,6 +23,7 @@ class AbstractHealth:
         self.config = config
         self.last_check_date = None
         self.last_fail_notify_date = None
+        self.last_receives = []
         self.fail_count = 0
         self.fail_notify_count = 0
         self.pending = False
@@ -83,8 +84,8 @@ class AbstractHealth:
     def _reset_fail_count(self):
         if self.fail_notify_count > 0:
             content = "{name}恢复正常".format(name=self.config.name)
-            if self.config.receivers is not None and len(self.config.receivers) > 0:
-                NotifyManager().send_groups_text(self.config.receivers, content)
+            if self.last_receives is not None and len(self.last_receives) > 0:
+                NotifyManager().send_groups_text(self.last_receives, content)
         self.fail_count = 0
         self.fail_notify_count = 0
         self.last_fail_notify_date = None
@@ -100,11 +101,12 @@ class AbstractHealth:
         self.fail_notify_count = self.fail_notify_count + 1
         if self.config.receivers is not None and len(self.config.receivers) > 0:
             if selected_receiver is None:
-                NotifyManager().send_groups_text(self.config.receivers, content)
+                self.last_receives = self.config.receivers
+                NotifyManager().send_groups_text(self.last_receives, content)
             else:
-                receivers = list(
+                self.last_receives = list(
                     filter(lambda x: x == selected_receiver, self.config.receivers))
-                NotifyManager().send_groups_text(receivers, content)
+                NotifyManager().send_groups_text(self.last_receives, content)
 
     def load_import(self):
         config = self.config
