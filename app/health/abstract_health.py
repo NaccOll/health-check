@@ -12,7 +12,10 @@ def getTime():
 
 
 class HealthError(RuntimeError):
-    pass
+
+    def __init__(self, message, selected_receiver=None):
+        super().__init__(message, None)
+        self.selected_receiver = selected_receiver
 
 
 class AbstractHealth:
@@ -62,13 +65,16 @@ class AbstractHealth:
             self._reset_fail_count()
             self.logger.info("{name}检查通过, 响应时间: {check_time}".format(
                 name=config.name, check_time=check_time))
-        except BaseException as err:
+        except (HealthError, BaseException) as err:
             reason = err.args[0]
             self.logger.error("{name}检查失败, 响应时间: {check_time}, 错误原因: {error_msg}".format(
                 name=config.name, check_time=check_time, error_msg=reason))
             self.fail_count = self.fail_count+1
             if self.fail_count >= config.fail_notify_count:
-                self.notify(reason)
+                if isinstance(err, HealthError):
+                    self.notify(reason, err.selected_receiver)
+                else:
+                    self.notify(reason)
             return False
         finally:
             self.pending = False
@@ -76,24 +82,29 @@ class AbstractHealth:
 
     def _reset_fail_count(self):
         if self.fail_notify_count > 0:
-            content = "站点监控: {name}恢复正常".format(name=self.config.name)
+            content = "{name}恢复正常".format(name=self.config.name)
             if self.config.receivers is not None and len(self.config.receivers) > 0:
                 NotifyManager().send_groups_text(self.config.receivers, content)
         self.fail_count = 0
         self.fail_notify_count = 0
         self.last_fail_notify_date = None
 
-    def notify(self, reason):
+    def notify(self, reason, selected_receiver=None):
         if not self.last_fail_notify_date is None and \
                 self.last_fail_notify_date+self.config.fail_silent_period*1000 > getTime():
             return
         self.last_fail_notify_date = getTime()
-        content = "站点监控: {name}发生异常, 连续{fail_count}次未通过健康检查,原因: {reason} 请立即排查".format(
+        content = "{name}发生异常, 连续{fail_count}次未通过健康检查,原因: {reason}".format(
             name=self.config.name, fail_count=self.fail_count, reason=reason)
         self.logger.error(content)
         self.fail_notify_count = self.fail_notify_count + 1
         if self.config.receivers is not None and len(self.config.receivers) > 0:
-            NotifyManager().send_groups_text(self.config.receivers, content)
+            if selected_receiver is None:
+                NotifyManager().send_groups_text(self.config.receivers, content)
+            else:
+                receivers = list(
+                    filter(lambda x: x == selected_receiver, self.config.receivers))
+                NotifyManager().send_groups_text(receivers, content)
 
     def load_import(self):
         config = self.config
